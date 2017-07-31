@@ -6,56 +6,53 @@ var dotenv  = require('dotenv').config({path: './.env'});
 // Initializing
 console.log('Welcome to the GitHub Avatar Downloader!');
 
+var GITHUB_USER   = process.env.GITHUB_USER;
+var GITHUB_TOKEN  = process.env.GITHUB_TOKEN;
+
+var dir = "./avatars/"
+
+var repoOwner = process.argv[2];
+var repoName  = process.argv[3];
+
+
+
+
+// Check if two arguments are given to the program
+if (process.argv.length !== 4 ){
+
+  console.log('This program should be executed from the command line, in the following manner:');
+  console.log('node download_avatars.js <repoOwner> <repoName>');
 
 // Check if the .env file exists
-if (fs.existsSync('./.env')) {
+} else if (!fs.existsSync('./.env')) {
 
-  var GITHUB_USER   = process.env.GITHUB_USER;
-  var GITHUB_TOKEN  = process.env.GITHUB_TOKEN;
-
-  // Calling the getRepoContributors and making the command line arguments mandatory
-  if (process.argv.length === 4 ){
-
-    var repoOwner = process.argv[2];
-    var repoName  = process.argv[3];
-
-    getRepoContributors(repoOwner, repoName, function(error, result) {
-      // Call downloadImageByURL if getRepoContributors did not pass any errors
-      if (!error) {
-        result.forEach(function(userData) {
-          var dir = "./avatars/";
-          // Check if the directory exists, if not make the directory
-          if (fs.existsSync(dir)) {
-            var filePath = `${dir}${userData.login}.jpg`;
-            downloadImageByURL(userData.avatar_url,filePath);
-          } else {
-            fs.mkdirSync(dir);
-          }
-        })
-      // Print out the error if the getRepoContributors function was not sucessful
-      } else {
-        console.log(`There was an error while getting the contributors of the ${repoName} repo: ${error}`)
-      }
-    })
-  } else {
-    console.log('This program should be executed from the command line, in the following manner:');
-    console.log('node download_avatars.js <repoOwner> <repoName>');
-  }
-} else {
   console.log("The .env file does not exist!")
+
+// Check if the user and access token exist in the .env file
+} else if (!GITHUB_TOKEN || !GITHUB_USER) {
+
+  console.log("Either github username or github access code is not defined in the .env file")
+
+// check if the the avatars directory exists if not create it
+} else if (!fs.existsSync(dir)) {
+
+  console.log('Directory  ${dir} has been created.')
+
+// Otherwise run the code
+} else {
+
+  getRepoContributors(repoOwner, repoName, function(error, result) {
+    if (!error) {
+      result.forEach(function(userData) {
+        var filePath = `${dir}${userData.login}.jpg`;
+        downloadImageByURL(userData.avatar_url,filePath);
+      })
+    } else {
+      console.log("**********", error)
+    }
+  });
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -75,9 +72,13 @@ function getRepoContributors(repoOwner, repoName, cb) {
   request(options, function (error, response, body) {
     var info = null;
     // Parse the response to info if the transfer was successful
-    if (!error && response.statusCode == 200) {
+    if (!error && response.statusCode === 200) {
       info = JSON.parse(body);
-    // Add status code to the error if there is an error or the staus code is not 200
+    } else if (response.statusCode === 404) {
+      error = 'The repo or owner does not exists (Status Code: 400)'
+    } else (reponse.statusCode === 401) {
+      error = 'The .env file contains incorrect credentials'
+      // Add status code to the error for other cases of the error
     } else {
       error = error + response.statusCode;
     }
@@ -101,6 +102,8 @@ request.get(url)
 }
 // Exporting the downloadImageByURL function for testing
 module.exports = downloadImageByURL;
+
+
 
 
 
