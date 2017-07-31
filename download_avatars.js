@@ -41,21 +41,27 @@ request.get(url)
        });
 
 }
+module.exports = downloadImageByURL
+
+
+
+if (process.argv.length >= 4 ){
+  getRepoContributors(process.argv[2], process.argv[3], function(error, result) {
+    if (!error) {
+      result.forEach(function(userData) {
+        var filePath = `./avatars/${userData.login}.jpg`
+        downloadImageByURL(userData.avatar_url,filePath)
+      })
+    } else {
+      console.log(error)
+    }
+  })
+} else {
+  console.log('This program should be executed from the command line, in the following manner:')
+  console.log('node download_avatars.js <repoOwner> <repoName>')
+}
 
 
 
 
-
-
-
-getRepoContributors(process.argv[2], process.argv[3], function(error, result) {
-  if (!error){
-    result.forEach(function (userData){
-      var filePath = userData.avatar_url.split("/")[4].split("?")[0] + '.jpg';
-      downloadImageByURL(userData.avatar_url,filePath)
-    })
-  } else {
-    console.log(error)
-  }
-});
 
