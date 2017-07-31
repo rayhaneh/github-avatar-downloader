@@ -48,11 +48,15 @@ if (process.argv.length !== 4 ){
         downloadImageByURL(userData.avatar_url,filePath);
       })
     } else {
-      console.log("**********", error)
+      console.log(error)
     }
   });
 
 }
+
+
+
+
 
 
 
@@ -74,11 +78,17 @@ function getRepoContributors(repoOwner, repoName, cb) {
     // Parse the response to info if the transfer was successful
     if (!error && response.statusCode === 200) {
       info = JSON.parse(body);
+
+    // Check if the error was because the owner or the repo do not exist
     } else if (response.statusCode === 404) {
-      error = 'The repo or owner does not exists (Status Code: 400)'
-    } else (reponse.statusCode === 401) {
-      error = 'The .env file contains incorrect credentials'
-      // Add status code to the error for other cases of the error
+
+      error = 'The repo or owner does not exists (Status Code: 400)';
+
+    // Check if the error was because the .env file contains incorrect credentials
+    } else  if(reponse.statusCode === 401) {
+      error = 'The .env file contains incorrect credentials';
+
+    // For all cases of error
     } else {
       error = error + response.statusCode;
     }
