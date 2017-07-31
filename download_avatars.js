@@ -1,10 +1,13 @@
 // Required Modules
 var request = require('request');
 var fs      = require('fs');
+var dotenv  = require('dotenv').config({path: './.env'});
 
-// Initializing
-var GITHUB_USER   = "rayhaneh";
-var GITHUB_TOKEN  = "50b6098a754070bbc17f0bdc980689b70d3a6e82";
+
+
+// Reading the .env file
+var GITHUB_USER   = process.env.GITHUB_USER;
+var GITHUB_TOKEN  = process.env.GITHUB_TOKEN;
 
 console.log('Welcome to the GitHub Avatar Downloader!');
 
@@ -13,6 +16,7 @@ console.log('Welcome to the GitHub Avatar Downloader!');
 function getRepoContributors(repoOwner, repoName, cb) {
 
   var requestURL = 'https://'+ GITHUB_USER + ':' + GITHUB_TOKEN + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors';
+  var requestURL = `https://'${GITHUB_USER}:${GITHUB_TOKEN}@api.github.com/repos/${repoOwner}/${repoName}/contributors`;
 
   var options = {
     url: requestURL,
@@ -22,11 +26,11 @@ function getRepoContributors(repoOwner, repoName, cb) {
   };
 
   request(options, function (error, response, body) {
-    var info = null
+    var info = null;
     if (!error && response.statusCode == 200) {
       info = JSON.parse(body);
     }
-    cb (error,info)
+    cb (error,info);
   });
 
 }
@@ -40,7 +44,7 @@ request.get(url)
        })
        .pipe(fs.createWriteStream(filePath))
        .on('finish',function () {
-        console.log('Github avatar saved to ' + filePath)
+        console.log('Github avatar saved to ' + filePath);
        });
 
 }
