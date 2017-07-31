@@ -3,9 +3,9 @@ var chaiFiles = require('chai-files');
 
 chai.use(chaiFiles);
 
-var expect = chai.expect;
-var file = chaiFiles.file;
-var dir = chaiFiles.dir;
+var expect = chai.expect
+var file = chaiFiles.file
+var dir = chaiFiles.dir
 
 var downloadImageByURL = require("../download_avatars")
 
