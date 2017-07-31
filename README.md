@@ -12,6 +12,6 @@ This program should be executed from the command line, in the following manner:
 
 ## Test downloadImageByURL
 
-To test the downloadImageByURL function type"
+To test the downloadImageByURL function type:
 
 `npm test`
