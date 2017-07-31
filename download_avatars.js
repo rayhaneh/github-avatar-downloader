@@ -4,7 +4,6 @@ var fs      = require('fs');
 var dotenv  = require('dotenv').config({path: './.env'});
 
 
-
 // Reading the .env file
 var GITHUB_USER   = process.env.GITHUB_USER;
 var GITHUB_TOKEN  = process.env.GITHUB_TOKEN;
@@ -53,7 +52,7 @@ module.exports = downloadImageByURL;
 
 
 // Calling the getRepoContributors and making the command line arguments mandatory
-if (process.argv.length >= 4 ){
+if (process.argv.length === 4 ){
 
   var repoOwner = process.argv[2];
   var repoName  = process.argv[3];
@@ -62,8 +61,14 @@ if (process.argv.length >= 4 ){
     // Call downloadImageByURL if getRepoContributors did not pass any errors
     if (!error) {
       result.forEach(function(userData) {
-        var filePath = `./avatars/${userData.login}.jpg`;
-        downloadImageByURL(userData.avatar_url,filePath);
+        var dir = "./avatars/";
+        // Check if the directory exists, if not make the directory
+        if (fs.existsSync(dir)) {
+          var filePath = `${dir}${userData.login}.jpg`;
+          downloadImageByURL(userData.avatar_url,filePath);
+        } else {
+          fs.mkdirSync(dir);
+        }
       })
     // Print out the error if the getRepoContributors function was not sucessful
     } else {
