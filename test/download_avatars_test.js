@@ -9,7 +9,7 @@ var file    = chaiFiles.file;
 var dir     = chaiFiles.dir;
 
 // Import the function to be tested
-var downloadImageByURL = require("../download_avatars");
+var downloadImageByURL = require("../download_avatars").downloadImageByURL;
 
 // Test downloadImageByURL in isolation
 describe("Download image files test", function() {
